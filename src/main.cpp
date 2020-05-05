@@ -32,7 +32,7 @@ uint32_t delayMS;
 
 //WIFI
 const char* ssid = "*****************";
-const char* password = "**************";
+const char* password = "****************";
 //MQTT
 const char* mqtt_server = "test.mosquitto.org";//Adresse IP du Broker Mqtt
 const int mqttPort = 1883; //port utilisé par le Broker
@@ -171,5 +171,8 @@ void callback(char* topic, byte *payload, unsigned int length) {
 
 //Fonction pour publier un float sur un topic
 void mqtt_publish(String topic, float t){
-  client.publish(topic.c_str(), t);
+  char t_char[50];
+  String t_str = String(t);
+  t_str.toCharArray(t_char, t_str.length() + 1);
+  client.publish(topic.c_str(), t_char);
 }
