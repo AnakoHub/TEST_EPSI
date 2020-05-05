@@ -31,8 +31,8 @@ DHT_Unified dht(DHTPIN, DHTTYPE);
 uint32_t delayMS;
 
 //WIFI
-const char* ssid = "*****************";
-const char* password = "****************";
+const char* ssid = "XXXXXXXXXXXXX";
+const char* password = "XXXXXXXXXXXXX";
 //MQTT
 const char* mqtt_server = "test.mosquitto.org";//Adresse IP du Broker Mqtt
 const int mqttPort = 1883; //port utilisé par le Broker
@@ -108,10 +108,7 @@ void loop() {
   //On utilise pas un delay pour ne pas bloquer la réception de messages
   if (millis()-tps>2000){
      tps=millis();
-     float temp = random(30);
-     mqtt_publish("EPSI/TEST/EDMOND", float(event.temperature));
-     Serial.print("qqchose : ");
-     Serial.println(temp);
+     mqtt_publish("EPSI/TEST/EDMOND", event.temperature);
    }
 }
 
