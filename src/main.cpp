@@ -14,6 +14,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <PubSubClient.h> //Librairie pour la gestion Mqtt
+#include <Buzzer.h>
 #include "main.h"
 
 #define DHTPIN 14     // Digital pin connected to the DHT sensor
@@ -31,11 +32,11 @@ DHT_Unified dht(DHTPIN, DHTTYPE);
 uint32_t delayMS;
 
 //WIFI
-const char* ssid = "XXXXXXXXXXXXX";
+const char* ssid = "XXXXXXXXXXXX";
 const char* password = "XXXXXXXXXXXXX";
 //MQTT
 const char* mqtt_server = "test.mosquitto.org";//Adresse IP du Broker Mqtt
-const int mqttPort = 1883; //port utilisé par le Broker
+const int mqtt_port = 1883; //port utilisé par le Broker
 long tps=0;
 
 #define MQTT_BROKER "local mosquitto"
@@ -45,6 +46,8 @@ ESP8266WiFiMulti WiFiMulti;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+Buzzer buzzer(11,13);
+
 void setup() {
   Serial.begin(115200);
   setup_wifi();
@@ -52,7 +55,7 @@ void setup() {
   client.publish("EPSI/TEST/EDMOND", "Hello from ESP8266");
   // Initialize device.
   dht.begin();
-  Serial.println(F("DHT11 Unified Sensor Example"));
+  Serial.println(F("DHT11 Unified Sensor"));
   // Print temperature sensor details.
   sensor_t sensor;
   dht.temperature().getSensor(&sensor);
@@ -80,7 +83,122 @@ void setup() {
 }
 
 void loop() {
-  // Delay between measurements.
+
+  int time = 500;
+
+  buzzer.begin(10);
+  buzzer.sound(NOTE_G3, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_C4, time / 2);
+  buzzer.sound(NOTE_G3, time * 2);
+
+  buzzer.sound(NOTE_G3, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_C4, time / 2);
+  buzzer.sound(NOTE_A4, time * 2);
+
+  buzzer.sound(NOTE_A4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_G4, time);
+  buzzer.sound(NOTE_G4, time);
+
+  buzzer.sound(NOTE_A5, time / 2);
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_E4, time * 2);
+
+  buzzer.sound(NOTE_G3, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_C4, time / 2);
+  buzzer.sound(NOTE_G3, time * 2);
+
+  buzzer.sound(NOTE_G3, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_C4, time / 2);
+  buzzer.sound(NOTE_A4, time * 2);
+
+  buzzer.sound(NOTE_A4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_G4, (time * 3) / 4);
+  buzzer.sound(NOTE_G4, time / 4);
+
+  buzzer.sound(NOTE_A5, time / 2);
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_C4, time * 2);
+
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time);
+
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_C4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_E4, time * 2);
+
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 4);
+  buzzer.sound(NOTE_E4, time / 4);
+
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_D4, time);
+  buzzer.sound(NOTE_G4, time);
+
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time);
+
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_C4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_E4, time * 2);
+
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 2);
+  buzzer.sound(NOTE_E4, time / 4);
+  buzzer.sound(NOTE_E4, time / 4);
+
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_G4, time / 2);
+  buzzer.sound(NOTE_F4, time / 2);
+  buzzer.sound(NOTE_D4, time / 2);
+  buzzer.sound(NOTE_C4, time * 2);
+
+  buzzer.end(2000);
   delay(delayMS);
   // Get temperature event and print its value.
   sensors_event_t event;
@@ -109,7 +227,7 @@ void loop() {
   if (millis()-tps>2000){
      tps=millis();
      mqtt_publish("EPSI/TEST/EDMOND", event.temperature);
-   }
+  }
 }
 
 void setup_wifi(){
@@ -128,7 +246,7 @@ void setup_wifi(){
 }
 
 void setup_mqtt(){
-  client.setServer(mqtt_server, mqttPort);
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);//Déclaration de la fonction de souscription
   reconnect();
 }
@@ -141,13 +259,6 @@ void callback(char* topic, byte *payload, unsigned int length) {
    Serial.print("donnee:");
    Serial.write(payload, length);
    Serial.println();
-   if ((char)payload[0] == '1') {
-     Serial.println("LED ON");
-      digitalWrite(2,HIGH);
-   } else {
-     Serial.println("LED OFF");
-     digitalWrite(2,LOW);
-   }
  }
 
  void reconnect(){
@@ -168,8 +279,5 @@ void callback(char* topic, byte *payload, unsigned int length) {
 
 //Fonction pour publier un float sur un topic
 void mqtt_publish(String topic, float t){
-  char t_char[50];
-  String t_str = String(t);
-  t_str.toCharArray(t_char, t_str.length() + 1);
-  client.publish(topic.c_str(), t_char);
+  client.publish(topic.c_str(), String(t).c_str());
 }
