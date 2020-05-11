@@ -1,4 +1,6 @@
 # TEST_EPSI
-Projet programmation d'un circuit arduino
+Programmation d'un circuit ESP 8266 Arduino
 
-Relevé de temperature et d'humidité à l'aide d'un circuit arduino
+* Relevé de température et d'humidité
+* Ajout d'un LED sur le breadboard
+* Ajout et programmation d'un buzzer passif
