@@ -17,6 +17,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <PubSubClient.h> //Librairie pour la gestion Mqtt
+#include <Buzzer.h>
 #include "main.h"
 
 #define DHTPIN 14     // Digital pin connected to the DHT sensor
@@ -34,12 +35,14 @@ DHT_Unified dht(DHTPIN, DHTTYPE);
 uint32_t delayMS;
 
 //WIFI
-const char* ssid = "XXXXXXXXX";
-const char* password = "XXXXXXXXXXXX";
+const char* ssid = "XXXXXXXXXX";
+const char* password = "XXXXXXXXX";
 //MQTT
 const char* mqtt_server = "test.mosquitto.org";//Adresse IP du Broker Mqtt
 const int mqtt_port = 1883; //port utilisé par le Broker
 long tps=0;
+
+float sensorTemp, sensorHum;
 
 #define MQTT_BROKER "local mosquitto"
 #define MQTT_BROKER_PORT  1883
@@ -47,12 +50,14 @@ long tps=0;
 ESP8266WiFiMulti WiFiMulti;
 WiFiClient espClient;
 PubSubClient client(espClient);
+Buzzer buzzer(12);
 
 void setup() {
   Serial.begin(115200);
   setup_wifi();
   setup_mqtt();
-  client.publish("EPSI/TEST/EDMOND", "Hello from ESP8266");
+  client.publish("EPSI/DHT11/-1/Temperature", "Hello from ESP8266");
+  client.publish("EPSI/DHT11/-1/Humidity", "Hello from ESP8266");
   // Initialize device.
   dht.begin();
   Serial.println(F("DHT11 Unified Sensor"));
@@ -80,12 +85,10 @@ void setup() {
   Serial.println(F("------------------------------------"));
   // Set delay between sensor readings based on sensor details.
   delayMS = sensor.min_delay / 1000;
+  pinMode(5, OUTPUT);
 }
 
 void loop() {
-
-  int time = 500;
-  delay(delayMS);
   // Get temperature event and print its value.
   sensors_event_t event;
   dht.temperature().getEvent(&event);
@@ -93,16 +96,19 @@ void loop() {
     Serial.println(F("Error reading temperature!"));
   }
   else {
+    sensorTemp = event.temperature;
     Serial.print(F("Temperature: "));
     Serial.print(event.temperature);
     Serial.println(F("°C"));
   }
+
   // Get humidity event and print its value.
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
     Serial.println(F("Error reading humidity!"));
   }
   else {
+    sensorHum = event.relative_humidity;
     Serial.print(F("Humidity: "));
     Serial.print(event.relative_humidity);
     Serial.println(F("%"));
@@ -110,10 +116,27 @@ void loop() {
   reconnect();
   client.loop();
   //On utilise pas un delay pour ne pas bloquer la réception de messages
-  if (millis()-tps>2000){
+  if (millis()-tps>5000){
      tps=millis();
-     mqtt_publish("EPSI/TEST/EDMOND", event.relative_humidity);
+     mqtt_publish("EPSI/DHT11/-1/Temperature", sensorTemp);
+     mqtt_publish("EPSI/DHT11/-1/Humidity", sensorHum);
   }
+  // led_light();
+  // buzzer_sound();
+}
+
+void led_light(){
+  digitalWrite(5,LOW);
+  delay(1000);
+  digitalWrite(5,HIGH);
+  delay(1000);
+}
+
+void buzzer_sound(){
+  buzzer.begin(100);
+
+  buzzer.sound(NOTE_E7, 80);
+  buzzer.sound(NOTE_E7, 80);
 }
 
 void setup_wifi(){
@@ -167,7 +190,7 @@ void callback(char* topic, byte *payload, unsigned int length) {
     delay(2000);
     }
   }
-  client.subscribe("EPSI/TEST/EDMOND");//souscription au topic led pour commander une led
+  client.subscribe("EPSI/DHT11/-1/Temperature");//souscription au topic led pour commander une led
 }
 
 //Fonction pour publier un float sur un topic

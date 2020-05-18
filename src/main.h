@@ -6,3 +6,5 @@ void setup_mqtt();
 void mqtt_publish(String , float );
 void loop();
 void setup();
+void buzzer_sound();
+void led_light();
