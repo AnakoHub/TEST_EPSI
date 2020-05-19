@@ -12,6 +12,7 @@
 #include <Wire.h>
 #include <DHT.h>
 #include <DHT_U.h>
+#include <Servo.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <SPI.h>
@@ -21,6 +22,9 @@
 #include "main.h"
 
 #define DHTPIN 14     // Digital pin connected to the DHT sensor
+#define LEDPIN 5      // Digital pin connected to the led
+#define BUZZERPIN 12  // Digital pin connected to the buzzer
+#define SERVOPIN 4    // Digital pin connected to the servo
 // Feather HUZZAH ESP8266 note: use pins 3, 4, 5, 12, 13 or 14 --
 // Pin 15 can work but DHT must be disconnected during program upload.
 
@@ -36,21 +40,26 @@ uint32_t delayMS;
 
 //WIFI
 const char* ssid = "XXXXXXXXXX";
-const char* password = "XXXXXXXXX";
+const char* password = "XXXXXXXXXXX";
 //MQTT
 const char* mqtt_server = "test.mosquitto.org";//Adresse IP du Broker Mqtt
 const int mqtt_port = 1883; //port utilisé par le Broker
 long tps=0;
 
-float sensorTemp, sensorHum;
-
 #define MQTT_BROKER "local mosquitto"
-#define MQTT_BROKER_PORT  1883
+#define MQTT_BROKER_PORT 1883
 
 ESP8266WiFiMulti WiFiMulti;
 WiFiClient espClient;
 PubSubClient client(espClient);
-Buzzer buzzer(12);
+
+// Variables declaration:
+unsigned long previousMillis = 0;        // will store last time LED was updated
+int ledState = LOW;             // ledState used to set the LED
+float sensorTemp, sensorHum;
+Buzzer buzzer(BUZZERPIN);
+Servo myServo;  // create servo object to control a servo
+// twelve servo objects can be created on most boards
 
 void setup() {
   Serial.begin(115200);
@@ -85,7 +94,8 @@ void setup() {
   Serial.println(F("------------------------------------"));
   // Set delay between sensor readings based on sensor details.
   delayMS = sensor.min_delay / 1000;
-  pinMode(5, OUTPUT);
+  pinMode(LEDPIN, OUTPUT);
+  myServo.attach(SERVOPIN);  // attaches the servo on GIO$ to the servo object
 }
 
 void loop() {
@@ -115,28 +125,57 @@ void loop() {
   }
   reconnect();
   client.loop();
+
+  //servo_motor();
   //On utilise pas un delay pour ne pas bloquer la réception de messages
-  if (millis()-tps>5000){
+  if (millis()-tps>2000){
      tps=millis();
      mqtt_publish("EPSI/DHT11/-1/Temperature", sensorTemp);
      mqtt_publish("EPSI/DHT11/-1/Humidity", sensorHum);
   }
-  // led_light();
-  // buzzer_sound();
+  led_light();
+  buzzer_sound();
+  servo_motor();
 }
 
-void led_light(){
-  digitalWrite(5,LOW);
-  delay(1000);
-  digitalWrite(5,HIGH);
-  delay(1000);
+void led_light() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= 1000) {
+    // save the last time you blinked the LED
+    previousMillis = currentMillis;
+
+    // if the LED is off turn it on and vice-versa:
+    if (ledState == LOW) {
+      ledState = HIGH;
+    } else {
+      ledState = LOW;
+    }
+    // set the LED with the ledState of the variable:
+    digitalWrite(LEDPIN, ledState);
+  }
 }
 
-void buzzer_sound(){
+void buzzer_sound() {
   buzzer.begin(100);
 
   buzzer.sound(NOTE_E7, 80);
   buzzer.sound(NOTE_E7, 80);
+
+  buzzer.end(500);
+}
+
+void servo_motor(){
+  int pos;
+
+  for (pos = 0; pos <= 90; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myServo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
+  for (pos = 90; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+    myServo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
 }
 
 void setup_wifi(){

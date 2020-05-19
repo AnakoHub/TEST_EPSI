@@ -8,3 +8,4 @@ void loop();
 void setup();
 void buzzer_sound();
 void led_light();
+void servo_motor();
